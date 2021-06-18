@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   typeWriteTextStart();
   videoVimeo();
   contactInfo();
+  
 });
 
 
