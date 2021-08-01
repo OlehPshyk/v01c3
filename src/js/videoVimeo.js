@@ -123,7 +123,9 @@ const videoVimeo = async () => {
       height: iframePlayerHeight, //TOTO CALC WIDTH/HEIGHT
       width: iframePlayerWidth,   //TOTO CALC WIDTH/HEIGHT    
       background: 0, 
-      controls: false, 
+      // testing Iphone Issue
+      // controls: false,       
+      controls: true,
       // responsive: true,
       autoplay: true,
       muted: false,
@@ -188,7 +190,8 @@ const videoVimeo = async () => {
     }, intervalT);       
   }
   const playVideo = (ind) => { 
-    recalcSize();
+    // testing Iphone Issue
+    // recalcSize();
     players[ind] = new Vimeo(document.getElementById('vimeoPlayer'), createOptions(`${urls[ind]}`)); 
     let descriptions = descriptionsVideosTimes.find(el=>el.url===urls[ind]);  
     let timeToEndFade, timeToEndSoundFade, timeToEndFadeFlag = false, timeToEndSoundFadeFlag = false, fadeEffectFlag = false;
