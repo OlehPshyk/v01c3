@@ -13,8 +13,12 @@ const videoVimeo = async () => {
   let iframePlayerHeight = playerHeight;
   let descriptionsVideos = [];
   let descriptionsVideosTimes = [];
-  let fadeDuration = 0.5;
-  let soundFadeDuration = 1;
+  let fadeDuration = 0.2;
+  let soundFadeDuration = 0.2;
+  let iphoneFlag=false;
+  if((navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i))) {
+    if (document.cookie.indexOf("iphone_redirect=false") == -1) iphoneFlag=true;
+  }
 
   const changeSizeIframe = (w,h) => {
     document.querySelector('#vimeoPlayer iframe').width=w;
@@ -116,21 +120,17 @@ const videoVimeo = async () => {
     },{})
   );
   // console.log("descriptionsVideosTimes:",descriptionsVideosTimes);
-  const createOptions = (url) => {       
+  const createOptions = (url) => {     
     return {
       url: url,
       // id: 507026918, 
       height: iframePlayerHeight, //TOTO CALC WIDTH/HEIGHT
       width: iframePlayerWidth,   //TOTO CALC WIDTH/HEIGHT    
-      background: 0, 
-      // testing Iphone Issue
-      // controls: false,       
-      controls: true,
+      background: 0,     
+      controls: iphoneFlag,
       // responsive: true,
       autoplay: true,
-      // testing Iphone Issue
-      // muted: false,
-      muted: true,
+      muted: iphoneFlag,      
       loop: false,      
     }
   }
@@ -172,7 +172,7 @@ const videoVimeo = async () => {
     let fog = document.querySelector('#fadeFog');
     if(fog){
       fog.classList.remove('active');
-      setTimeout(()=>document.getElementById('fadeFog').remove(),500);   
+      setTimeout(()=>document.getElementById('fadeFog').remove(),soundFadeDuration * 1000);   
     }
   }
   const changeVolume = (player,start,end,step,duration) => {
@@ -184,7 +184,6 @@ const videoVimeo = async () => {
       valueVolume = valueVolume + step;      
       if (valueVolume>1) valueVolume=1;
       if (valueVolume<0) valueVolume=0;      
-      // console.log("set volume:", valueVolume.toFixed(1));
       if(player){     
         player.setVolume(valueVolume.toFixed(1));      
       }
@@ -192,66 +191,64 @@ const videoVimeo = async () => {
     }, intervalT);       
   }
   const playVideo = (ind) => { 
-    console.log("play video");
-    // testing Iphone Issue
-    // recalcSize();
+    recalcSize();
     players[ind] = new Vimeo(document.getElementById('vimeoPlayer'), createOptions(`${urls[ind]}`)); 
     let descriptions = descriptionsVideosTimes.find(el=>el.url===urls[ind]);  
     let timeToEndFade, timeToEndSoundFade, timeToEndFadeFlag = false, timeToEndSoundFadeFlag = false, fadeEffectFlag = false;
-    // players[ind].setVolume(0);
-
-    // testing Iphone Issue 
-    // if(descriptions){      
-    //   players[ind].setCurrentTime(descriptions.start);
-    //   players[ind].on('timeupdate', e=>onTimeupdateControll(e,descriptions.end));         
-    // }else{
-    //   console.log("without timing especially for video with wrong url");      
-    // }    
-
-
+    
+    if(descriptions){      
+      players[ind].setCurrentTime(descriptions.start);
+      players[ind].on('timeupdate', e=>onTimeupdateControll(e,descriptions.end));         
+    }else{
+      console.log("without timing especially for video with wrong url");      
+    }    
     // players[ind].on('bufferend', function(){
     //   // this event not stalill fired!!!      
     //   hideFadeFog();
     //   changeVolume(players[ind],0.2,1,0.2,soundFadeDuration);
     //   fadeEffectFlag = true;
-    // } ); 
+    // } );
 
-    // testing Iphone Issue
-    // players[ind].on('play', function(data){ 
-    //   this.setVolume(0.2);    
-    //   if(descriptions){      
-    //     timeToEndFade = descriptions.end - fadeDuration;
-    //     timeToEndSoundFade = descriptions.end - soundFadeDuration - 0.2; //correction
-    //   }else{
-    //     timeToEndFade = data.duration - fadeDuration;
-    //     timeToEndSoundFade = data.duration - soundFadeDuration - 0.2; //correction
-    //   } 
-    // }); 
-
-    // testing Iphone Issue
-    // players[ind].on('timeupdate', function(data){
-    //   if(!fadeEffectFlag){        
-    //     hideFadeFog();
-    //     changeVolume(this,0.2,1,0.2,soundFadeDuration);
-    //     fadeEffectFlag = true;
-    //   }      
-    //   if(!timeToEndFadeFlag && (data.seconds > timeToEndFade) ){        
-    //     addFadeFog('with fade');        
-    //     timeToEndFadeFlag = true;
-    //   }   
-    //   if(!timeToEndSoundFadeFlag && (data.seconds > timeToEndSoundFade) ){
-    //     changeVolume(this,1,0.2,-0.2,soundFadeDuration);
-    //     timeToEndSoundFadeFlag = true;
-    //   }    
-    // });
+    
+    players[ind].on('play', function(data){      
+      if(!iphoneFlag){
+        this.setVolume(0.2);    
+        if(descriptions){      
+          timeToEndFade = descriptions.end - fadeDuration;
+          timeToEndSoundFade = descriptions.end - soundFadeDuration - 0.2; //correction
+        }else{
+          timeToEndFade = data.duration - fadeDuration;
+          timeToEndSoundFade = data.duration - soundFadeDuration - 0.2; //correction
+        } 
+      }
+    }); 
+    players[ind].on('timeupdate', function(data){ 
+      console.log("timeupdate data:",data);
+      if(!fadeEffectFlag){        
+        hideFadeFog();
+        if(!iphoneFlag){
+          changeVolume(this,0.2,1,0.2,soundFadeDuration);
+        }
+        fadeEffectFlag = true;
+      }      
+      if(!timeToEndFadeFlag && (data.seconds > timeToEndFade) ){        
+        addFadeFog('with fade');        
+        timeToEndFadeFlag = true;
+      }   
+      if(!timeToEndSoundFadeFlag && (data.seconds > timeToEndSoundFade) ){
+        changeVolume(this,1,0.2,-0.2,soundFadeDuration);
+        // if(!iphoneFlag){
+        //   changeVolume(this,1,0.2,-0.2,soundFadeDuration);
+        // }
+        timeToEndSoundFadeFlag = true;
+      }    
+    });
     
     
     players[ind].on('ended', endVideoPlay);
   }  
   const startPlayVideos = () => { 
-    // testing Iphone Issue
-    // addFadeFog();
-
+    addFadeFog();
     document.querySelector('#start-screen').classList.remove('active');
     if(urls.length){
       document.createElement('div');
@@ -260,7 +257,6 @@ const videoVimeo = async () => {
       vimaoPlayerContainer.setAttribute("id", "vimeoPlayer");    
       document.querySelector('.main').appendChild(vimaoPlayerContainer);      
       window.addEventListener('resize', debounce(resizeResolver,50));
-      // document.getElementById('next-video').addEventListener('click', endVideoPlay);
       playVideo(indVideo);      
     }else{
       showFinishScreen();
