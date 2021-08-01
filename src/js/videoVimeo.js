@@ -128,7 +128,9 @@ const videoVimeo = async () => {
       controls: true,
       // responsive: true,
       autoplay: true,
-      muted: false,
+      // testing Iphone Issue
+      // muted: false,
+      muted: true,
       loop: false,      
     }
   }
