@@ -190,6 +190,7 @@ const videoVimeo = async () => {
     }, intervalT);       
   }
   const playVideo = (ind) => { 
+    console.log("play video");
     // testing Iphone Issue
     // recalcSize();
     players[ind] = new Vimeo(document.getElementById('vimeoPlayer'), createOptions(`${urls[ind]}`)); 
