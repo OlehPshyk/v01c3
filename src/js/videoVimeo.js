@@ -196,50 +196,60 @@ const videoVimeo = async () => {
     players[ind] = new Vimeo(document.getElementById('vimeoPlayer'), createOptions(`${urls[ind]}`)); 
     let descriptions = descriptionsVideosTimes.find(el=>el.url===urls[ind]);  
     let timeToEndFade, timeToEndSoundFade, timeToEndFadeFlag = false, timeToEndSoundFadeFlag = false, fadeEffectFlag = false;
-    // players[ind].setVolume(0); 
-    if(descriptions){      
-      players[ind].setCurrentTime(descriptions.start);
-      players[ind].on('timeupdate', e=>onTimeupdateControll(e,descriptions.end));         
-    }else{
-      console.log("without timing especially for video with wrong url");      
-    }    
+    // players[ind].setVolume(0);
+
+    // testing Iphone Issue 
+    // if(descriptions){      
+    //   players[ind].setCurrentTime(descriptions.start);
+    //   players[ind].on('timeupdate', e=>onTimeupdateControll(e,descriptions.end));         
+    // }else{
+    //   console.log("without timing especially for video with wrong url");      
+    // }    
+
+
     // players[ind].on('bufferend', function(){
     //   // this event not stalill fired!!!      
     //   hideFadeFog();
     //   changeVolume(players[ind],0.2,1,0.2,soundFadeDuration);
     //   fadeEffectFlag = true;
     // } ); 
-    players[ind].on('play', function(data){ 
-      this.setVolume(0.2);    
-      if(descriptions){      
-        timeToEndFade = descriptions.end - fadeDuration;
-        timeToEndSoundFade = descriptions.end - soundFadeDuration - 0.2; //correction
-      }else{
-        timeToEndFade = data.duration - fadeDuration;
-        timeToEndSoundFade = data.duration - soundFadeDuration - 0.2; //correction
-      } 
-    }); 
-    players[ind].on('timeupdate', function(data){
-      if(!fadeEffectFlag){        
-        hideFadeFog();
-        changeVolume(this,0.2,1,0.2,soundFadeDuration);
-        fadeEffectFlag = true;
-      }      
-      if(!timeToEndFadeFlag && (data.seconds > timeToEndFade) ){        
-        addFadeFog('with fade');        
-        timeToEndFadeFlag = true;
-      }   
-      if(!timeToEndSoundFadeFlag && (data.seconds > timeToEndSoundFade) ){
-        changeVolume(this,1,0.2,-0.2,soundFadeDuration);
-        timeToEndSoundFadeFlag = true;
-      }    
-    });
+
+    // testing Iphone Issue
+    // players[ind].on('play', function(data){ 
+    //   this.setVolume(0.2);    
+    //   if(descriptions){      
+    //     timeToEndFade = descriptions.end - fadeDuration;
+    //     timeToEndSoundFade = descriptions.end - soundFadeDuration - 0.2; //correction
+    //   }else{
+    //     timeToEndFade = data.duration - fadeDuration;
+    //     timeToEndSoundFade = data.duration - soundFadeDuration - 0.2; //correction
+    //   } 
+    // }); 
+
+    // testing Iphone Issue
+    // players[ind].on('timeupdate', function(data){
+    //   if(!fadeEffectFlag){        
+    //     hideFadeFog();
+    //     changeVolume(this,0.2,1,0.2,soundFadeDuration);
+    //     fadeEffectFlag = true;
+    //   }      
+    //   if(!timeToEndFadeFlag && (data.seconds > timeToEndFade) ){        
+    //     addFadeFog('with fade');        
+    //     timeToEndFadeFlag = true;
+    //   }   
+    //   if(!timeToEndSoundFadeFlag && (data.seconds > timeToEndSoundFade) ){
+    //     changeVolume(this,1,0.2,-0.2,soundFadeDuration);
+    //     timeToEndSoundFadeFlag = true;
+    //   }    
+    // });
     
     
     players[ind].on('ended', endVideoPlay);
   }  
   const startPlayVideos = () => { 
-    addFadeFog();
+    // testing Iphone Issue
+    // addFadeFog();
+
     document.querySelector('#start-screen').classList.remove('active');
     if(urls.length){
       document.createElement('div');
